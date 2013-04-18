@@ -82,7 +82,7 @@ define(['require'], function(require) {
                         console.error ("Error loading resources");
                         var failedId = err.requireModules && err.requireModules[0];
                         requirejs.undef(failedId);
-                        args.hostInterface.setInstanceStatus ('fatal', 'Error initializing plugin: ' + failedId);
+                        args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
                     });
     };
         
