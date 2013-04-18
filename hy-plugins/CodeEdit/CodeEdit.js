@@ -73,7 +73,7 @@ define(['require'], function(require) {
         this.CodeArea.style.height = pluginConf.div.height + "px";
         
         //require (['http://d1n0x3qji82z53.cloudfront.net/src-min-noconflict/ace.js'],
-        require ([require.toUrl('./ace-builds/src-min-noconflict/ace.js')],
+        require ([require.toUrl('./lib/ace/src-min-noconflict/ace.js')],
                     function () {
                         var resources = arguments;
                         pluginFunction.call (this, args, resources);
