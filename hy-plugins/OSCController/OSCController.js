@@ -29,7 +29,7 @@ define(['require'], function(require) {
 			selectMarkup += '<option> Remote </option>';
 			
 			for (var i = 0; i < oscList.length; i+=1) {
-                    selectMarkup += '<option>' + oscList[i].displayName + '</option>';
+                    selectMarkup += '<option>' + oscList[i].customName + '</option>';
 			}
 			selectMarkup += '</select>';
 			
