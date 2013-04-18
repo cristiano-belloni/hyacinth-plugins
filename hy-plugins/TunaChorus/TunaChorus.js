@@ -119,7 +119,7 @@ define(['require'], function(require) {
                         console.error ("Error loading resources");
                         var failedId = err.requireModules && err.requireModules[0];
                         requirejs.undef(failedId);
-                        args.K2HInterface.pluginError (args.id, "Error loading resources");
+                        args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
                     });
     };
         
