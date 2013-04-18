@@ -57,7 +57,9 @@ define(['require'], function(require) {
             }.bind(this),
             readOnly: true // false if this command should not apply in readOnly mode
         });
-        
+
+        // Initialization made it so far: plugin is ready.
+        args.hostInterface.setInstanceStatus ('ready');
     };
     
     
@@ -80,7 +82,7 @@ define(['require'], function(require) {
                         console.error ("Error loading resources");
                         var failedId = err.requireModules && err.requireModules[0];
                         requirejs.undef(failedId);
-                        args.hostInterface.setInstanceStatus ('fatal', 'Error loading resources');
+                        args.hostInterface.setInstanceStatus ('fatal', 'Error initializing plugin: ' + failedId);
                     });
     };
         

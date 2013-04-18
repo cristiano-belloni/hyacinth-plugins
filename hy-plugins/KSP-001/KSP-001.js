@@ -248,7 +248,8 @@ define(['require'], function(require) {
             }
             this.ui.refresh();
         
-        return this;   
+        // Initialization made it so far: plugin is ready.
+        args.hostInterface.setInstanceStatus ('ready');  
     };
     
     /* This function gets called by the host every time an instance of
@@ -267,7 +268,9 @@ define(['require'], function(require) {
                     }.bind(this),
                     function (err) {
                         console.error ("Error loading resources");
-                        args.K2HInterface.pluginError (args.id, "Error loading resources");
+                        var failedId = err.requireModules && err.requireModules[0];
+                        requirejs.undef(failedId);
+                        args.hostInterface.setInstanceStatus ('fatal', 'Error initializing plugin: ' + failedId);
                     });
          };
  
