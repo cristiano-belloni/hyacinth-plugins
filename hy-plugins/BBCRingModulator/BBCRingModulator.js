@@ -226,6 +226,9 @@ define(['require'], function(require) {
             value : 0.0
         });
         this.ui.refresh();
+
+        // Initialization made it so far: plugin is ready.
+        args.hostInterface.setInstanceStatus ('ready');
   };
   
   

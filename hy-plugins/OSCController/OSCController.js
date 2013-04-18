@@ -180,7 +180,10 @@ define(['require'], function(require) {
 			 modelEntry.persistent = false;
 		 }
 		 
-		 this.ui.refresh();
+		this.ui.refresh();
+
+        // Initialization made it so far: plugin is ready.
+        args.hostInterface.setInstanceStatus ('ready');
 	 }
   
     /* This function gets called by the host every time an instance of

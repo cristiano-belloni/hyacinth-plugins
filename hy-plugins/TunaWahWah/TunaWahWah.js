@@ -132,6 +132,9 @@ define(['require'], function(require) {
         this.ui.setValue ({elementID: buttonArgs.ID, value: 1});
        
         this.ui.refresh();
+
+        // Initialization made it so far: plugin is ready.
+        args.hostInterface.setInstanceStatus ('ready');
     };
     
     

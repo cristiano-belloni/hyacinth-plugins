@@ -209,7 +209,10 @@ define(['require'], function(require) {
 		 this.ui.addElement(new K2.Knob(masterKnobArgs));
 		 this.ui.setValue ({elementID: masterKnobArgs.ID, value: 1});
         
-        this.ui.refresh(); 
+        this.ui.refresh();
+
+        // Initialization made it so far: plugin is ready.
+        args.hostInterface.setInstanceStatus ('ready'); 
   }
   
     /* This function gets called by the host every time an instance of
