@@ -16,7 +16,7 @@ define(['require'], function(require) {
         
         this.canvas = args.canvas;
 		this.model = {};
-		this.hostInterface = args.K2HInterface;
+		this.hostInterface = args.hostInterface;
         
         this.createModalWindow = function (id) {
 			console.log ("Element ID is: ", id);
