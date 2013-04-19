@@ -136,14 +136,14 @@ define(['require'], function(require) {
                         var failedId = err.requireModules && err.requireModules[0];
                         requirejs.undef(failedId);
                         args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
-                    });
-            },
+                    }.bind(this));
+            }.bind(this),
             function (err) {
                 console.error ("Error loading Tuna");
                 var failedId = err.requireModules && err.requireModules[0];
                 requirejs.undef(failedId);
                 args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
-        });
+        }.bind(this));
 
     };
         
