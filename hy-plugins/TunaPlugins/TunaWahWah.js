@@ -24,6 +24,7 @@ define(['require'], function(require) {
         var deckImage =  resources[1];
         var switchUpImage =  resources[2];
         var switchDownImage =  resources[3];
+        var Tuna = resources[4];
         
         var tuna = new Tuna(this.context);
         
@@ -140,10 +141,17 @@ define(['require'], function(require) {
     
     var initPlugin = function(initArgs) {
         var args = initArgs;
-        require ([  'image!'+ require.toUrl('./assets/images/knob_64_64_64.png'),
+
+        require ([  "./assets/js/tuna.js" ],
+            function () {
+                // Tuna is set as module Tuna
+                // Then required again, together with the images.
+                // Nested requires: what a joy.
+                require ([  'image!'+ require.toUrl('./assets/images/knob_64_64_64.png'),
                     'image!'+ require.toUrl('./assets/images/TWWDeck.png'),
                     'image!'+ require.toUrl('./assets/images/switch_up.png'),
-                    'image!'+ require.toUrl('./assets/images/switch_down.png')  ],
+                    'image!'+ require.toUrl('./assets/images/switch_down.png'),
+                    'Tuna' ],
                     function () {
                         var resources = arguments;
                         pluginFunction.call (this, args, resources);
@@ -154,6 +162,14 @@ define(['require'], function(require) {
                         requirejs.undef(failedId);
                         args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
                     });
+            },
+            function (err) {
+                console.error ("Error loading Tuna");
+                var failedId = err.requireModules && err.requireModules[0];
+                requirejs.undef(failedId);
+                args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
+        });
+
     };
         
     return {

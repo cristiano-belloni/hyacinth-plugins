@@ -138,7 +138,7 @@ define(['require'], function(require) {
                 var failedId = err.requireModules && err.requireModules[0];
                 requirejs.undef(failedId);
                 args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
-            });
+        });
     };
         
     return {
