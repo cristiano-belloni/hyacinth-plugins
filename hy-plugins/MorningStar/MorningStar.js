@@ -238,7 +238,7 @@ define(['require'], function(require) {
     var initPlugin = function(initArgs) {
         var args = initArgs;
         require ([  
-					require.toUrl('./assets/js/synth.js'),
+					'./assets/js/synth.js',
 					'image!'+ require.toUrl('./assets/images/bknob.png'),
 					'image!'+ require.toUrl('./assets/images/wknob.png'),
                     'image!'+ require.toUrl('./assets/images/msdeck.png'),
