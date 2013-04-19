@@ -113,9 +113,15 @@ define(['require'], function(require) {
     
     var initPlugin = function(initArgs) {
         var args = initArgs;
-        require ([  'image!'+ require.toUrl('./assets/images/knob_64_64_64.png'),
+
+        require ([  "./assets/js/tuna.js" ],
+            function () {
+                // Tuna is set as module Tuna
+                // Then required again, together with the images.
+                // Nested requires: what a joy.
+                require ([  'image!'+ require.toUrl('./assets/images/knob_64_64_64.png'),
                     'image!'+ require.toUrl('./assets/images/TCDeck.png'),
-                    './assets/js/tuna.js' ],
+                    'Tuna' ],
                     function () {
                         var resources = arguments;
                         pluginFunction.call (this, args, resources);
@@ -126,6 +132,13 @@ define(['require'], function(require) {
                         requirejs.undef(failedId);
                         args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
                     });
+            },
+            function (err) {
+                console.error ("Error loading Tuna");
+                var failedId = err.requireModules && err.requireModules[0];
+                requirejs.undef(failedId);
+                args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
+            });
     };
         
     return {
