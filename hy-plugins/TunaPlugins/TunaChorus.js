@@ -122,7 +122,7 @@ define(['require'], function(require) {
 
         var resList = [ 'image!'+ require.toUrl('./assets/images/knob_64_64_64.png'),
                         'image!'+ require.toUrl('./assets/images/TCDeck.png'),
-                        'Tuna'
+                        'Tuna',
                         'kievII'];
 
         require(['../common/js/kievII.min.js', './assets/js/tuna.js'],
