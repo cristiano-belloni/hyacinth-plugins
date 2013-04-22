@@ -23,6 +23,7 @@ define(['require'], function(require) {
         var knobImage =  resources[0];
         var deckImage =  resources[1];
         var Tuna = resources[2];
+        var k2i = resources[3];
         
         var tuna = new Tuna(this.context);
         
@@ -37,7 +38,7 @@ define(['require'], function(require) {
        this.chorus.connect(this.audioDestination);
        
        // The canvas part
-       this.ui = new K2.UI ({type: 'CANVAS2D', target: args.canvas});
+       this.ui = new k2i.UI ({type: 'CANVAS2D', target: args.canvas});
         
        this.viewWidth = args.canvas.width;
        this.viewHeight = args.canvas.height;
@@ -51,7 +52,7 @@ define(['require'], function(require) {
                               ];
 
         /* deck */
-       var bgArgs = new K2.Background({
+       var bgArgs = new k2i.Background({
             ID: 'background',
             image: deckImage,
             top: 0,
@@ -83,7 +84,7 @@ define(['require'], function(require) {
                     }
                 }
                 if (knobElIndex !== -1) {
-                    var setValue = K2.MathUtils.linearRange (0, 1, currKnob.range[0], currKnob.range[1], value);
+                    var setValue = k2i.MathUtils.linearRange (0, 1, currKnob.range[0], currKnob.range[1], value);
                     console.log ("Setting", value, setValue, "to", element);
                     this.chorus[element] =  setValue;
                 }
@@ -99,8 +100,8 @@ define(['require'], function(require) {
              var currKnob = this.knobDescription[i];
              knobArgs.ID = currKnob.id;
              knobArgs.left = (initOffset + i * knobSpacing);
-             this.ui.addElement(new K2.Knob(knobArgs));
-             var initValue = K2.MathUtils.linearRange (currKnob.range[0], currKnob.range[1], 0, 1, currKnob.init);
+             this.ui.addElement(new k2i.Knob(knobArgs));
+             var initValue = k2i.MathUtils.linearRange (currKnob.range[0], currKnob.range[1], 0, 1, currKnob.init);
              this.ui.setValue ({elementID: knobArgs.ID, value: initValue});
         }
        
