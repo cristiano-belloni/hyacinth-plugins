@@ -261,7 +261,7 @@ define(['require'], function(require) {
             var failedId = err.requireModules && err.requireModules[0];
             requirejs.undef(failedId);
             args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
-        }
+        }.bind(this);
 
         var resList = [ 'image!'+ require.toUrl('./assets/images/keyblack.png'),
                         'image!'+ require.toUrl('./assets/images/keywhite.png'),
@@ -281,7 +281,7 @@ define(['require'], function(require) {
                         requireErr (err);
                     }
                 );
-            },
+            }.bind(this),
             function(err) {
                 requireErr (err);
             }

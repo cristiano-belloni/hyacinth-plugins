@@ -114,31 +114,33 @@ define(['require'], function(require) {
     var initPlugin = function(initArgs) {
         var args = initArgs;
 
-        require ([  "./assets/js/tuna.js" ],
-            function () {
-                // Tuna is set as module Tuna
-                // Then required again, together with the images.
-                // Nested requires: what a joy.
-                require ([  'image!'+ require.toUrl('./assets/images/knob_64_64_64.png'),
-                    'image!'+ require.toUrl('./assets/images/TCDeck.png'),
-                    'Tuna' ],
+        var requireErr = function (err) {
+            var failedId = err.requireModules && err.requireModules[0];
+            requirejs.undef(failedId);
+            args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
+        }.bind(this);
+
+        var resList = [ 'image!'+ require.toUrl('./assets/images/knob_64_64_64.png'),
+                        'image!'+ require.toUrl('./assets/images/TCDeck.png'),
+                        'Tuna'
+                        'kievII'];
+
+        require(['../common/js/kievII.min.js', './assets/js/tuna.js'],
+            function() {
+                require (resList,
                     function () {
                         var resources = arguments;
                         pluginFunction.call (this, args, resources);
                     }.bind(this),
                     function (err) {
-                        console.error ("Error loading resources");
-                        var failedId = err.requireModules && err.requireModules[0];
-                        requirejs.undef(failedId);
-                        args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
-                    }.bind(this));
+                        requireErr (err);
+                    }
+                );
             }.bind(this),
-            function (err) {
-                console.error ("Error loading Tuna");
-                var failedId = err.requireModules && err.requireModules[0];
-                requirejs.undef(failedId);
-                args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
-        }.bind(this));
+            function(err) {
+                requireErr (err);
+            }
+        );
     };
         
     return {
