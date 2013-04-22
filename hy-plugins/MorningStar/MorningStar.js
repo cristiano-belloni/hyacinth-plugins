@@ -21,6 +21,8 @@ define(['require'], function(require) {
         var keyWhiteImage = resources[5];
         var keyBlackDownImage = resources[6];
         var keyWhiteDownImage = resources[7];
+        // Instance-related KievII object
+        var k2i = resources[9];
         
         this.name = args.name;
         this.id = args.id;
@@ -36,11 +38,11 @@ define(['require'], function(require) {
         this.MSS.init(context, this.audioDestination);
         
         // The graphical part
-        this.ui = new K2.UI ({type: 'CANVAS2D', target: args.canvas}, {'breakOnFirstEvent': true});
+        this.ui = new k2i.UI ({type: 'CANVAS2D', target: args.canvas}, {'breakOnFirstEvent': true});
         
         /* BACKGROUND INIT */
         
-        var bgArgs = new K2.Background({
+        var bgArgs = new k2i.Background({
             ID: 'background',
             image: deckImage,
             top: 0,
@@ -50,7 +52,7 @@ define(['require'], function(require) {
         this.ui.addElement(bgArgs, {zIndex: 0});
         
         /* LABEL INIT */
-        this.label = new K2.Label({
+        this.label = new k2i.Label({
             ID: 'statusLabel',
             width : 320,
             height : 29,
@@ -119,7 +121,7 @@ define(['require'], function(require) {
             whiteKeyArgs.top = 300;
             whiteKeyArgs.left = 14 + i * 30;    
             whiteKeyArgs.ID = "wk_" + i;
-            this.ui.addElement(new K2.Button(whiteKeyArgs), {zIndex: 1});
+            this.ui.addElement(new k2i.Button(whiteKeyArgs), {zIndex: 1});
         }
         
         // Black keys
@@ -138,13 +140,13 @@ define(['require'], function(require) {
                 blackKeyArgs.top = 299;
                 blackKeyArgs.left = bkArray[i];    
                 blackKeyArgs.ID = "bk_" + i;
-                this.ui.addElement(new K2.Button(blackKeyArgs), {zIndex: 10});
+                this.ui.addElement(new k2i.Button(blackKeyArgs), {zIndex: 10});
             }
             
-        this.knobDescription = [ {id: 'envelope', init: K2.MathUtils.linearRange (0, 127, 0, 1, this.MSS.getEnvelope()), type: 'white'},
-                                 {id: 'release', init: K2.MathUtils.linearRange (0, 127, 0, 1, this.MSS.getRelease()), type: 'white'},
-                                 {id: 'cutoff', init: K2.MathUtils.linearRange (0, 127, 0, 1, this.MSS.getCutoff()), type: 'white'},
-                                 {id: 'resonance', init: K2.MathUtils.linearRange (0, 127, 0, 1, this.MSS.getResonance()), type: 'white'},
+        this.knobDescription = [ {id: 'envelope', init: k2i.MathUtils.linearRange (0, 127, 0, 1, this.MSS.getEnvelope()), type: 'white'},
+                                 {id: 'release', init: k2i.MathUtils.linearRange (0, 127, 0, 1, this.MSS.getRelease()), type: 'white'},
+                                 {id: 'cutoff', init: k2i.MathUtils.linearRange (0, 127, 0, 1, this.MSS.getCutoff()), type: 'white'},
+                                 {id: 'resonance', init: k2i.MathUtils.linearRange (0, 127, 0, 1, this.MSS.getResonance()), type: 'white'},
                                  {id: 'velocity', init: this.velocity, type: 'black'},
                                  {id: 'volume', init: this.MSS.getVolume(), type: 'black'},
                               ];
@@ -165,27 +167,27 @@ define(['require'], function(require) {
 						this.ui.setValue({elementID: "statusLabel", value: "Volume: " + Math.round(value * 127)});
 					    break;
 					case 'velocity':
-						var velocity = K2.MathUtils.linearRange (0, 1, 0, 127, value);
+						var velocity = k2i.MathUtils.linearRange (0, 1, 0, 127, value);
 						this.velocity = Math.round(velocity);
 						this.ui.setValue({elementID: "statusLabel", value: "Velocity: " + this.velocity});
 					    break;
 					case 'envelope':
-						var envelope = K2.MathUtils.linearRange (0, 1, 0, 127, value);
+						var envelope = k2i.MathUtils.linearRange (0, 1, 0, 127, value);
 						this.MSS.setEnvelope(envelope);
 						this.ui.setValue({elementID: "statusLabel", value: "Envelope: " + Math.round(envelope)});
 					    break;
 					case 'release':
-						var release = K2.MathUtils.linearRange (0, 1, 0, 127, value);
+						var release = k2i.MathUtils.linearRange (0, 1, 0, 127, value);
 						this.MSS.setRelease(release);
 						this.ui.setValue({elementID: "statusLabel", value: "Release: " + Math.round(release)});
 						break;
 					case 'cutoff':
-						var cutoff = K2.MathUtils.linearRange (0, 1, 0, 127, value);
+						var cutoff = k2i.MathUtils.linearRange (0, 1, 0, 127, value);
 						this.MSS.setCutoff(cutoff);
 						this.ui.setValue({elementID: "statusLabel", value: "Cutoff: " + Math.round(cutoff)});
 					    break;	
 					case 'resonance':
-						var resonance = K2.MathUtils.linearRange (0, 1, 0, 127, value);
+						var resonance = k2i.MathUtils.linearRange (0, 1, 0, 127, value);
 						this.MSS.setResonance(resonance);
 						this.ui.setValue({elementID: "statusLabel", value: "Resonance: " + Math.round(resonance)});
 					    break;	
@@ -220,7 +222,7 @@ define(['require'], function(require) {
                 knobArgs.left = (blackInit + (i - 3) * blackSpacing);
             }
              
-            this.ui.addElement(new K2.RotKnob(knobArgs));
+            this.ui.addElement(new k2i.RotKnob(knobArgs));
             var initValue = currKnob.init;
             this.ui.setValue ({elementID: knobArgs.ID, value: initValue});
         }    
@@ -237,27 +239,42 @@ define(['require'], function(require) {
        the plugin is requested [e.g: displayed on screen] */        
     var initPlugin = function(initArgs) {
         var args = initArgs;
-        require ([  
-					'./assets/js/synth.js',
-					'image!'+ require.toUrl('./assets/images/bknob.png'),
-					'image!'+ require.toUrl('./assets/images/wknob.png'),
-                    'image!'+ require.toUrl('./assets/images/msdeck.png'),
-                    'image!'+ require.toUrl('./assets/images/keyblack.png'),
-                    'image!'+ require.toUrl('./assets/images/keywhite.png'),
-                    'image!'+ require.toUrl('./assets/images/keyblack_down.png'),
-                    'image!'+ require.toUrl('./assets/images/keywhite_down.png'),
-                    'font!google,families:[VT323]',
-                    ],
+
+        var requireErr = function (err) {
+            var failedId = err.requireModules && err.requireModules[0];
+            requirejs.undef(failedId);
+            args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
+        }
+
+        var resList = [ './assets/js/synth.js',
+                        'image!'+ require.toUrl('./assets/images/bknob.png'),
+                        'image!'+ require.toUrl('./assets/images/wknob.png'),
+                        'image!'+ require.toUrl('./assets/images/msdeck.png'),
+                        'image!'+ require.toUrl('./assets/images/keyblack.png'),
+                        'image!'+ require.toUrl('./assets/images/keywhite.png'),
+                        'image!'+ require.toUrl('./assets/images/keyblack_down.png'),
+                        'image!'+ require.toUrl('./assets/images/keywhite_down.png'),
+                        'font!google,families:[VT323]',
+                        'kievII'];
+
+        require(['../common/js/kievII.min.js'],
+            function() {
+                require (resList,
                     function () {
                         var resources = arguments;
                         pluginFunction.call (this, args, resources);
                     }.bind(this),
                     function (err) {
-                        var failedId = err.requireModules && err.requireModules[0];
-                        requirejs.undef(failedId);
-                        args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
+                        requireErr (err);
                     }
                 );
+            },
+            function(err) {
+                requireErr (err);
+            }
+        );
+
+        
     };
     
     return {

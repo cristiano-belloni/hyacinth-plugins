@@ -19,8 +19,10 @@ define(['require'], function(require) {
         var keyBlackDownImage = resources[2];
         var keyWhiteDownImage = resources[3];
         var deckImage = resources[4];
+        // Instance-related KievII object
+        var k2i = resources[5];
         
-        console.log ("plugin inited, args is", args, "KievII object is ", K2);
+        console.log ("plugin inited, args is", args, "KievII object is ", k2i);
         
         this.name = args.name;
         this.id = args.id;
@@ -32,7 +34,7 @@ define(['require'], function(require) {
         
         this.audioBuffer = null; 
         
-        this.ui = new K2.UI ({type: 'CANVAS2D', target: args.canvas}, {'breakOnFirstEvent': true});
+        this.ui = new k2i.UI ({type: 'CANVAS2D', target: args.canvas}, {'breakOnFirstEvent': true});
         
         this.viewWidth = args.canvas.width;
         this.viewHeight = args.canvas.height;
@@ -43,11 +45,9 @@ define(['require'], function(require) {
         var oscCallback = function (message) {
            console.log ("KSP-001 received message: ", message);
            var dest = message.toString();
-        };
+        }.bind(this);
             
-        this.localClient = this.handler.registerClient ({ clientID : "OSCKSP001Plugin",
-                                                          oscCallback : oscCallback.bind (this)
-                                                        });
+        this.handler.setCallback(oscCallback);
         
         // Member methods
         this.drop = function (evt) {
@@ -114,7 +114,7 @@ define(['require'], function(require) {
                     this.ui.refresh();
                 }.bind(this);
         
-                var waveBox_L = new K2.Wavebox(waveboxArgs);
+                var waveBox_L = new k2i.Wavebox(waveboxArgs);
                 this.ui.addElement(waveBox_L, {zIndex: 2});
             }
         
@@ -151,7 +151,7 @@ define(['require'], function(require) {
         this.canvas.addEventListener("drop", this.drop, false);
     
         // Background
-        var bgArgs = new K2.Background({
+        var bgArgs = new k2i.Background({
             ID: 'background',
             image: deckImage,
             top: 0,
@@ -225,7 +225,7 @@ define(['require'], function(require) {
             whiteKeyArgs.top = 204;
             whiteKeyArgs.left = 4 + i * 30;    
             whiteKeyArgs.ID = "wk_" + i;
-            this.ui.addElement(new K2.Button(whiteKeyArgs), {zIndex: 1});
+            this.ui.addElement(new k2i.Button(whiteKeyArgs), {zIndex: 1});
         }
         
         // Black keys
@@ -244,7 +244,7 @@ define(['require'], function(require) {
                 blackKeyArgs.top = 203;
                 blackKeyArgs.left = bkArray[i];    
                 blackKeyArgs.ID = "bk_" + i;
-                this.ui.addElement(new K2.Button(blackKeyArgs), {zIndex: 10});
+                this.ui.addElement(new k2i.Button(blackKeyArgs), {zIndex: 10});
             }
             this.ui.refresh();
         
@@ -256,23 +256,38 @@ define(['require'], function(require) {
        the plugin is requested [e.g: displayed on screen] */        
     var initPlugin = function(initArgs) {
         var args = initArgs;
-               
-        require ([  'image!'+ require.toUrl('./assets/images/keyblack.png'),
-                    'image!'+ require.toUrl('./assets/images/keywhite.png'),
-                    'image!'+ require.toUrl('./assets/images/keyblack_down.png'),
-                    'image!'+ require.toUrl('./assets/images/keywhite_down.png'),
-                    'image!'+ require.toUrl('./assets/images/deck.png')],
+
+        var requireErr = function (err) {
+            var failedId = err.requireModules && err.requireModules[0];
+            requirejs.undef(failedId);
+            args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
+        }
+
+        var resList = [ 'image!'+ require.toUrl('./assets/images/keyblack.png'),
+                        'image!'+ require.toUrl('./assets/images/keywhite.png'),
+                        'image!'+ require.toUrl('./assets/images/keyblack_down.png'),
+                        'image!'+ require.toUrl('./assets/images/keywhite_down.png'),
+                        'image!'+ require.toUrl('./assets/images/deck.png'),
+                        'kievII'];
+
+        require(['../common/js/kievII.min.js'],
+            function() {
+                require (resList,
                     function () {
                         var resources = arguments;
                         pluginFunction.call (this, args, resources);
                     }.bind(this),
                     function (err) {
-                        console.error ("Error loading resources");
-                        var failedId = err.requireModules && err.requireModules[0];
-                        requirejs.undef(failedId);
-                        args.hostInterface.setInstanceStatus ('fatal', {description: 'Error initializing plugin: ' + failedId});
-                    });
-         };
+                        requireErr (err);
+                    }
+                );
+            },
+            function(err) {
+                requireErr (err);
+            }
+        );
+               
+    };
  
     return {
       initPlugin: initPlugin,
