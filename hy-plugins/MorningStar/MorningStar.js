@@ -255,9 +255,10 @@ define(['require'], function(require) {
                         'image!'+ require.toUrl('./assets/images/keyblack_down.png'),
                         'image!'+ require.toUrl('./assets/images/keywhite_down.png'),
                         'font!google,families:[VT323]',
-                        'kievII'];
+                        'kievII',
+                        'require'];
 
-        require(['../common/js/kievII.min.js'],
+        args.customRequire(['../common/js/kievII.min.js'],
             function() {
                 require (resList,
                     function () {
